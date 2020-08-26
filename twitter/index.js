@@ -18,6 +18,10 @@ const stream = T.stream('statuses/filter', {track: '#akali'})
 stream.on('error', req => console.log(req))
 stream.on('tweet', tweet => {
   console.log(tweet.user.name, tweet.text)
+  io.emit('tweet',{
+    username: tweet.user.name,
+    text: tweet.text
+  })
 })
 
 app.set('view engine', 'ejs')
