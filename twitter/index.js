@@ -14,9 +14,10 @@ const T = new Twit({
   timeout_ms: 60*1000
 })
 
-const stream = T.stream('statuses/filter', {track: '#apple'})
+const stream = T.stream('statuses/filter', {track: '#akali'})
+stream.on('error', req => console.log(req))
 stream.on('tweet', tweet => {
-  console.log(tweet)
+  console.log(tweet.user.name, tweet.text)
 })
 
 app.set('view engine', 'ejs')
