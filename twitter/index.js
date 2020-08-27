@@ -28,8 +28,16 @@ const createStream = term => {
   })
   streams[term] = stream
 }
+
 const checkStreams = () => {
-  
+  //filtrar e desconectar sala inexistentes
+  const terms = Object.keys(streams)
+  terms
+  .filter( t => (!(t in io.sockets.adapter.rooms )))
+  .map( t => {
+    streams[t].stop()
+    delete streams[t]
+  })
 }
 
 io.on('connection',socket => {
@@ -45,8 +53,10 @@ io.on('connection',socket => {
   })
   console.log(io.sockets.adapter.rooms)
   socket.on('disconnect', reason =>{
-    console.log(reason)
-    console.log(io.sockets.adapter.rooms)
+    checkStreams()
+    console.log(streams)
+    //console.log(reason)
+    //console.log(io.sockets.adapter.rooms)
   })
 })
 
