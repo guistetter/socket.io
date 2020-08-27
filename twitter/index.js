@@ -14,15 +14,52 @@ const T = new Twit({
   timeout_ms: 60*1000
 })
 
-const stream = T.stream('statuses/filter', {track: '#akali'})
-stream.on('error', req => console.log(req))
-stream.on('tweet', tweet => {
-  console.log(tweet.user.name, tweet.text)
-  io.emit('tweet',{
-    username: tweet.user.name,
-    text: tweet.text
+const streams = {}
+const createStream = term => {
+  const stream = T.stream('statuses/filter', {track: term})
+  stream.on('error', req => console.log(req))
+  stream.on('tweet', tweet => {
+    console.log(tweet.user.name, tweet.text)
+    io.to(term).emit('tweet',{
+      username: tweet.user.name,
+      text: tweet.text,
+      term
+    })
+  })
+  streams[term] = stream
+}
+const checkStreams = () => {
+  
+}
+
+io.on('connection',socket => {
+  console.log(socket.id)
+  //socket.join('minhaSala')
+  socket.on('startStream', term => {
+    if(!(term in streams)){
+      createStream(term)
+      //streams[term] = 'opa'
+    }
+    socket.join(term)
+    //console.log('startStream', term, streams)
+  })
+  console.log(io.sockets.adapter.rooms)
+  socket.on('disconnect', reason =>{
+    console.log(reason)
+    console.log(io.sockets.adapter.rooms)
   })
 })
+
+//stream estatico
+// const stream = T.stream('statuses/filter', {track: '#akali'})
+// stream.on('error', req => console.log(req))
+// stream.on('tweet', tweet => {
+//   console.log(tweet.user.name, tweet.text)
+//   io.emit('tweet',{
+//     username: tweet.user.name,
+//     text: tweet.text
+//   })
+// })
 
 app.set('view engine', 'ejs')
 app.get('/', (req, res) => {
