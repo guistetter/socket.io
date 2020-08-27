@@ -11,7 +11,11 @@
     <title>TWEET RT</title>
   </head>
   <body>
-    <h1>Tweets sobre #akali</h1>
+    <h1>Tweets sobre: <input class="form-control"type="text" id="topic" placeholder="Escreva o trending topic"/></h1>
+    <div class="card m-4">
+      <p class="m-4">term</p>
+
+    </div>
     <div id="tweets">
 
     </div>
@@ -30,6 +34,12 @@
         socket.on('tweet', tweet => {
           console.log(tweet)
           $("#tweets").append('<div class="card"><b>'+ tweet.username+'</b>'+tweet.text+'</div>')
+        })
+        $("#topic").keyup(key => {
+          //console.log(key.keyCode)
+          if(key.keyCode === 13){
+            socket.emit('startStream', $('#topic').val())
+          }
         })
       })
     </script>
